@@ -1,0 +1,41 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model AddCompanyViewModel
+
+<h3>Add new company</h3>
+
+@using (Html.BeginForm("AddCompany", "Companies", FormMethod.Post))
+{
+    <div class="row mb-3">
+        <div class="mr-3">
+            @Html.TextBoxFor(x => x.Company.Name, new { @class = "form-control col-sm-12", placeholder = "Name" })
+        </div>
+        <div class="mr-3">
+            @Html.TextBoxFor(x => x.Company.City, new { @class = "form-control col-sm-12", placeholder = "City" })
+        </div>
+        <div class="mr-3">
+            @Html.TextBoxFor(x => x.Company.Street, new { @class = "form-control col-sm-12", placeholder = "Street" })
+        </div>
+        <div class="mr-3">
+            @Html.TextBoxFor(x => x.Company.BuildingNo, new { @class = "form-control col-sm-12", placeholder = "Building no." })
+        </div>
+        <div class="mr-3">
+            @Html.ListBoxFor(x => x.Company.Brokers, new MultiSelectList(@Model.Brokers, "Id", "FirstName"), new { id = "multiSelectDropDown", multiple = "multiple", style = "width:200px" })
+        </div>
+
+        <div>
+            <input type="submit" value="Add" class="btn btn-secondary" />
+        </div>
+    </div>
+
+}
+
+@section scripts {
+    <script>
+        $("#multiSelectDropDown").chosen();
+    </script>
+}

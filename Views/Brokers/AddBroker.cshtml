@@ -1,0 +1,26 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model BrokerModel
+
+<h3>Add new apartment</h3>
+
+@using (Html.BeginForm("AddBroker", "Brokers", FormMethod.Post))
+{
+    <div class="row mb-3">
+        <div class="mr-3">
+            @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control col-sm-12", placeholder = "First name" })
+        </div>
+        <div class="mr-3">
+            @Html.TextBoxFor(x => x.LastName, new { @class = "form-control col-sm-12", placeholder = "Last name" })
+        </div>
+
+        <div>
+            <input type="submit" value="Add" class="btn btn-secondary" />
+        </div>
+    </div>
+
+}

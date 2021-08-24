@@ -1,0 +1,32 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model AssignApartmentViewModel
+
+<h3>Add new apartment to this broker</h3>
+
+@using (Html.BeginForm("AssignApartment", "Brokers", FormMethod.Post))
+{
+<div class="row mb-3">
+    <div class="mr-3">
+        @Html.ListBoxFor(x => x.SelectedApartments, new MultiSelectList(@Model.Apartments, "Id", "Name"), new { id = "multiSelectDropDown", multiple = "multiple", style = "width:200px" })
+    </div>
+    <div>
+        @Html.HiddenFor(x => x.BrokerId)
+    </div>
+
+    <div>
+        <input type="submit" value="Add" class="btn btn-secondary" />
+    </div>
+</div>
+
+}
+
+@section scripts {
+    <script>
+        $("#multiSelectDropDown").chosen();
+    </script>
+}

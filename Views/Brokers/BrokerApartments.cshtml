@@ -1,0 +1,41 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model BrokerApartmentsViewModel
+
+<div class="container">
+
+    <div class="mb-3">
+        @Html.ActionLink("Add apartment", "AssignApartment", "Brokers", new { id = $"{Model.Broker.Id}" }, new { @class = "btn btn-warning" })
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">City</th>
+                <th scope="col">Address</th>
+                <th scope="col">Space (sq.m.)</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Apartments)
+            {
+                <tr>
+                    <td>@item.City</td>
+                    <td>@item.Street g. @item.BuildingNo</td>
+                    <td>@item.Space</td>
+                    <td>
+                    @Html.ActionLink("Remove from list", "UnAssignApartment", "Brokers", new { apartmentId = $"{item.Id}", brokerId = $"{Model.Broker.Id}"})
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+</div>
+

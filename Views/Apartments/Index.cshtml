@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model List<ApartmentModel>
+
+<div class="container">
+    <h1 class="mb-5">List of apartments in DB</h1>
+
+
+
+    <div class="mb-3">
+        @Html.ActionLink("Add apartment", "AddApartment", "Apartments", null, new { @class = "btn btn-warning" })
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Apartment</th>
+                <th scope="col">Company</th>
+                <th scope="col">Broker</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.City @item.Street g. @item.BuildingNo, @item.Space sq.m.</td>
+                    <td>@Html.ActionLink($"{@item.CompanyName}", "BrokersInCompany", "Companies", new { id = $"{item.CompanyId}" })</td>
+                    @if (@item.BrokerName == " ")
+                    {
+                <td>NA</td>
+                    }
+                    else { <td>@Html.ActionLink($"{@item.BrokerName}", "BrokerApartments", "Brokers", new { id = $"{item.BrokerId}" })</td> } 
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+</div>

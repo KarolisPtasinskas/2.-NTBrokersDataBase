@@ -1,0 +1,41 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model AddApartmentViewModel
+
+<h3>Add new apartment</h3>
+
+@using (Html.BeginForm("AddApartment", "Apartments", FormMethod.Post))
+{
+<div class="row mb-3">
+    <div class="mr-3">
+        @Html.TextBoxFor(x => x.Apartment.City, new { @class = "form-control col-sm-12", placeholder = "City" })
+    </div>
+    <div class="mr-3">
+        @Html.TextBoxFor(x => x.Apartment.Street, new { @class = "form-control col-sm-12", placeholder = "Street" })
+    </div>
+    <div class="mr-3">
+        @Html.TextBoxFor(x => x.Apartment.BuildingNo, new { @class = "form-control col-sm-12", placeholder = "Building no." })
+    </div>
+    <div class="mr-3">
+        @Html.TextBoxFor(x => x.Apartment.Floor, new { @class = "form-control col-sm-12", placeholder = "Floor" })
+    </div>
+    <div class="mr-3">
+        @Html.TextBoxFor(x => x.Apartment.FloorsInBuilding, new { @class = "form-control col-sm-12", placeholder = "Floor in building" })
+    </div>
+    <div class="mr-3">
+        @Html.TextBoxFor(x => x.Apartment.Space, new { @class = "form-control col-sm-12", placeholder = "Square meters" })
+    </div>
+    <div class="mr-3">
+        @Html.DropDownListFor(x => x.Apartment.CompanyId, new SelectList(Model.Companies, "Id", "Name"), null, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <input type="submit" value="Add" class="btn btn-secondary" />
+    </div>
+</div>
+
+}
