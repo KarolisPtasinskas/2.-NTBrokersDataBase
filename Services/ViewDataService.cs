@@ -11,12 +11,44 @@ namespace _2._NTBrokersDataBase.Services
         ApartmentsService _apartmentsService;
         CompaniesService _companiesService;
         BrokersService _brokersService;
+        FilterService _filterService;
 
-        public ViewDataService(ApartmentsService apartmentsService, CompaniesService companiesService, BrokersService brokersService)
+        public ViewDataService(ApartmentsService apartmentsService, CompaniesService companiesService, BrokersService brokersService, FilterService filterService)
         {
             _apartmentsService = apartmentsService;
             _companiesService = companiesService;
             _brokersService = brokersService;
+            _filterService = filterService;
+        }
+
+        public ApartmentsIndexViewModel GetAllApartments()
+        {
+            ApartmentsIndexViewModel apartmentsIndexView = new()
+            {
+                Apartments = _apartmentsService.GetAllApartments(),
+                FilterBy = new(),
+                Brokers = _brokersService.GetAllBrokers(),
+                Companies = _companiesService.GetAllCompanies()
+            };
+
+            return apartmentsIndexView;
+        }
+
+        public ApartmentsIndexViewModel GetFilteredApartments(ApartmentsIndexViewModel apartmentsIndexViewData)
+        {
+            ApartmentsIndexViewModel apartmentsIndexView = new()
+            {
+                Apartments = _filterService.GetApartments(apartmentsIndexViewData),
+                FilterBy = new()
+                {
+                    Broker = apartmentsIndexViewData.FilterBy.Broker,
+                    Company = apartmentsIndexViewData.FilterBy.Company
+                },
+                Brokers = _brokersService.GetAllBrokers(),
+                Companies = _companiesService.GetAllCompanies()
+            };
+
+            return apartmentsIndexView;
         }
 
         public AddApartmentViewModel AddApartment()

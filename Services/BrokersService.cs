@@ -138,6 +138,22 @@ namespace _2._NTBrokersDataBase.Services
             return apartments;
         }
 
+        //UPDATING apartment with new BrokerId (after assigning it to broker)
+        public void AssignApartment(AssignApartmentViewModel assignApartmentViewData)
+        {
+            foreach (var apartmentId in assignApartmentViewData.SelectedApartments)
+            {
+                _connection.Open();
+
+                var command = new SqlCommand($"UPDATE [dbo].[Apartments] SET [dbo].[Apartments].[BrokerId] = {assignApartmentViewData.BrokerId} WHERE [dbo].[Apartments].[Id] = {apartmentId}", _connection);
+                var reader = command.ExecuteReader();
+
+                _connection.Close();
+            }
+        }
+
+
+        //UPDATE apartment unassigning his BrokerID value (changint to 0)
         public void UnAssignApartment(int id)
         {
             _connection.Open();

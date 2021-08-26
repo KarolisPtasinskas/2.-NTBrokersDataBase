@@ -31,6 +31,7 @@ namespace _2._NTBrokersDataBase
             services.AddScoped<ApartmentsService>();
             services.AddScoped<CompaniesService>();
             services.AddScoped<BrokersService>();
+            services.AddScoped<FilterService>();
 
         }
 

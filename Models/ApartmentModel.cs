@@ -22,7 +22,7 @@ namespace _2._NTBrokersDataBase.Models
                 return $"{Street} g. {BuildingNo}, {City}";
             } }
 
-        public string BrokerName { get; set; } = "Not assigned";
+        public string BrokerName { get; set; }
         public string CompanyName { get; set; }
     }
 }

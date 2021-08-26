@@ -23,7 +23,7 @@ namespace _2._NTBrokersDataBase.Controllers
 
         public IActionResult Index()
         {
-            return View(_apartmentsService.GetAllApartments());
+            return View(_viewDataService.GetAllApartments());
         }
 
         public IActionResult AddApartment()
@@ -38,7 +38,10 @@ namespace _2._NTBrokersDataBase.Controllers
             return RedirectToAction("Index");
         }
 
-
+        public IActionResult FilterApartments(ApartmentsIndexViewModel apartmentsIndexViewData)
+        {
+            return View("Index", _viewDataService.GetFilteredApartments(apartmentsIndexViewData));
+        }
 
 
         public IActionResult Privacy()

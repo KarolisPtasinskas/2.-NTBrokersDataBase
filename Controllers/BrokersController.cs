@@ -52,7 +52,7 @@ namespace _2._NTBrokersDataBase.Controllers
         [HttpPost]
         public IActionResult AssignApartment(AssignApartmentViewModel assignApartmentViewData)
         {
-            _apartmentService.AssignApartment(assignApartmentViewData);
+            _brokersService.AssignApartment(assignApartmentViewData);
             //return RedirectToAction("BrokerApartments", assignApartmentViewData.BrokerId);
             return View("BrokerApartments", _viewDataService.ShowBrokerApartments(assignApartmentViewData.BrokerId));
         }

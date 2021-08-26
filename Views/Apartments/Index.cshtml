@@ -2,10 +2,33 @@
     ViewData["Title"] = "Home Page";
 }
 
-@model List<ApartmentModel>
+@model ApartmentsIndexViewModel
 
 <div class="container">
     <h1 class="mb-5">List of apartments in DB</h1>
+
+    @using (Html.BeginForm("FilterApartments", "Apartments", FormMethod.Post))
+    {
+<div class="d-flex mb-3">
+    <p class="col-md-2 font-weight-bold">Filter by: </p>
+    <div class="col-md-2">
+        @Html.DropDownListFor(x => x.FilterBy.Company, new SelectList(Model.Companies, "Id", "Name"), "Companies", new { @class = "form-control" })
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownListFor(x => x.FilterBy.Broker, new SelectList(Model.Brokers, "Id", "FullName"), "Broker", new { @class = "form-control" })
+    </div>
+    <div>
+        <input type="submit" value="Go" class="btn btn-outline-dark" />
+    </div>
+    @if (Model.FilterBy.Company != null || Model.FilterBy.Broker != null)
+        {
+            <div class="col-md-2">
+                @Html.ActionLink("Remove filter", "Index", "Apartments", null, new { @class = "btn btn-outline-primary" })
+            </div>
+        }
+
+</div>
+    }
 
 
 
@@ -22,16 +45,19 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Apartments)
             {
                 <tr>
                     <td>@item.City @item.Street g. @item.BuildingNo, @item.Space sq.m.</td>
                     <td>@Html.ActionLink($"{@item.CompanyName}", "BrokersInCompany", "Companies", new { id = $"{item.CompanyId}" })</td>
                     @if (@item.BrokerName == " ")
                     {
-                <td>NA</td>
+                        <td>NA</td>
                     }
-                    else { <td>@Html.ActionLink($"{@item.BrokerName}", "BrokerApartments", "Brokers", new { id = $"{item.BrokerId}" })</td> } 
+                    else
+                    {
+                        <td>@Html.ActionLink($"{@item.BrokerName}", "BrokerApartments", "Brokers", new { id = $"{item.BrokerId}" })</td>
+}
                 </tr>
             }
         </tbody>
