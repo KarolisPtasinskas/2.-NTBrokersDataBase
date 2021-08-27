@@ -15,6 +15,8 @@ namespace _2._NTBrokersDataBase.Services
         {
             _connection = connection;
         }
+
+        //SELECTING filtered apartments by company or broker or both.
         public List<ApartmentModel> GetApartments(ApartmentsIndexViewModel apartmentsIndexViewData)
         {
             

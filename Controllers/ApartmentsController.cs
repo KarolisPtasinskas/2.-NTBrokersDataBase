@@ -43,7 +43,6 @@ namespace _2._NTBrokersDataBase.Controllers
             return View("Index", _viewDataService.GetFilteredApartments(apartmentsIndexViewData));
         }
 
-
         public IActionResult Privacy()
         {
             return View();
