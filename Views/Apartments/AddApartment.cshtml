@@ -21,16 +21,16 @@
         @Html.TextBoxFor(x => x.Apartment.BuildingNo, new { @class = "form-control col-sm-12", placeholder = "Building no." })
     </div>
     <div class="mr-3">
-        @Html.TextBoxFor(x => x.Apartment.Floor, new { @class = "form-control col-sm-12", placeholder = "Floor" })
+        @Html.TextBoxFor(x => x.Apartment.AtFloor, new { @class = "form-control col-sm-12", placeholder = "Floor" })
     </div>
     <div class="mr-3">
         @Html.TextBoxFor(x => x.Apartment.FloorsInBuilding, new { @class = "form-control col-sm-12", placeholder = "Floor in building" })
     </div>
     <div class="mr-3">
-        @Html.TextBoxFor(x => x.Apartment.Space, new { @class = "form-control col-sm-12", placeholder = "Square meters" })
+        @Html.TextBoxFor(x => x.Apartment.ApartmentSpace, new { @class = "form-control col-sm-12", placeholder = "Square meters" })
     </div>
     <div class="mr-3">
-        @Html.DropDownListFor(x => x.Apartment.CompanyId, new SelectList(Model.Companies, "Id", "Name"), null, new { @class = "form-control" })
+        @Html.DropDownListFor(x => x.Apartment.CompanyId, new SelectList(Model.Companies, "Id", "CompanyName"), null, new { @class = "form-control" })
     </div>
 
     <div>

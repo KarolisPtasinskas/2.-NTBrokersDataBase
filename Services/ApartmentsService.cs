@@ -1,6 +1,9 @@
 ﻿using _2._NTBrokersDataBase.Models;
+using Dapper;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,11 +12,11 @@ namespace _2._NTBrokersDataBase.Services
 {
     public class ApartmentsService
     {
-        private readonly SqlConnection _connection;
+        private readonly IConfiguration _configuration;
 
-        public ApartmentsService(SqlConnection connection)
+        public ApartmentsService(IConfiguration configuration)
         {
-            _connection = connection;
+            _configuration = configuration;
         }
 
         //SELECT all apartments in DB
@@ -21,29 +24,10 @@ namespace _2._NTBrokersDataBase.Services
         {
             List<ApartmentModel> apartments = new();
 
-            _connection.Open();
-            var command = new SqlCommand("SELECT *, (SELECT ISNULL((SELECT [FirstName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), '')) AS BrokerName, (SELECT ISNULL((SELECT [LastName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), '')) AS BrokerLastName, (SELECT [CompanyName] FROM [dbo].[Companies] WHERE [dbo].[Apartments].[CompanyId] = [dbo].[Companies].[Id]) FROM [dbo].[Apartments]", _connection);
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                ApartmentModel apartment = new()
-                {
-                    Id = (int)reader.GetValue(0),
-                    City = (string)reader.GetValue(1),
-                    Street = (string)reader.GetValue(2),
-                    BuildingNo = (string)reader.GetValue(3),
-                    Floor = (int)reader.GetValue(4),
-                    FloorsInBuilding = (int)reader.GetValue(5),
-                    Space = (int)reader.GetValue(6),
-                    BrokerId = (int)reader.GetValue(7),
-                    CompanyId = (int)reader.GetValue(8),
-                    BrokerName = $"{(string)reader.GetValue(9)} {(string)reader.GetValue(10)}",
-                    CompanyName = (string)reader.GetValue(11)
-                };
-
-                apartments.Add(apartment);
+                apartments = connection.Query<ApartmentModel>("SELECT *, CONCAT_WS(' ', ((SELECT ISNULL((SELECT [FirstName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), ''))), ((SELECT ISNULL((SELECT [LastName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), '')))) AS BrokerName, (SELECT [CompanyName] FROM [dbo].[Companies] WHERE [dbo].[Apartments].[CompanyId] = [dbo].[Companies].[Id]) AS CompanyName FROM [dbo].[Apartments]").ToList();
             }
-            _connection.Close();
 
             return apartments;
         }
@@ -51,14 +35,12 @@ namespace _2._NTBrokersDataBase.Services
         //INSERTING one apartment to DB
         public void AddApartment(AddApartmentViewModel addApartmentViewData)
         {
-            _connection.Open();
+            string query = $"INSERT INTO dbo.Apartments (City, Street, BuildingNo, AtFloor, FloorsInBuilding, ApartmentSpace, BrokerId, CompanyId) values ('{addApartmentViewData.Apartment.City}', '{addApartmentViewData.Apartment.Street}', '{addApartmentViewData.Apartment.BuildingNo}', {addApartmentViewData.Apartment.AtFloor}, {addApartmentViewData.Apartment.FloorsInBuilding}, {addApartmentViewData.Apartment.ApartmentSpace}, {addApartmentViewData.Apartment.BrokerId}, {addApartmentViewData.Apartment.CompanyId})";
 
-            var command = new SqlCommand($"INSERT INTO dbo.Apartments (City, Street, BuildingNo, AtFloor, FloorsInBuilding, ApartmentSpace, BrokerId, CompanyId) values ('{addApartmentViewData.Apartment.City}', '{addApartmentViewData.Apartment.Street}', '{addApartmentViewData.Apartment.BuildingNo}', {addApartmentViewData.Apartment.Floor}, {addApartmentViewData.Apartment.FloorsInBuilding}, {addApartmentViewData.Apartment.Space}, {addApartmentViewData.Apartment.BrokerId}, {addApartmentViewData.Apartment.CompanyId})", _connection);
-            var reader = command.ExecuteReader();
-
-            _connection.Close();
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                connection.Execute(query);
+            }
         }
-
-
     }
 }

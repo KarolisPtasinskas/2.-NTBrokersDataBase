@@ -1,4 +1,6 @@
 ﻿using _2._NTBrokersDataBase.Models;
+using Dapper;
+using Microsoft.Extensions.Configuration;
 //using _2._NTBrokersDataBase.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,11 +12,11 @@ namespace _2._NTBrokersDataBase.Services
 {
     public class CompaniesService
     {
-        private readonly SqlConnection _connection;
+        private readonly IConfiguration _configuration;
 
-        public CompaniesService(SqlConnection connection)
+        public CompaniesService(IConfiguration configuration)
         {
-            _connection = connection;
+            _configuration = configuration;
         }
 
         //SELECT one company from DB + add brokers 
@@ -22,21 +24,10 @@ namespace _2._NTBrokersDataBase.Services
         {
             CompanyModel company = new();
 
-            _connection.Open();
-            var command = new SqlCommand($"SELECT * FROM [dbo].[Companies] WHERE [Id] = {id}", _connection);
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-
-                company.Id = (int)reader.GetValue(0);
-                company.Name = (string)reader.GetValue(1);
-                company.City = (string)reader.GetValue(2);
-                company.Street = (string)reader.GetValue(3);
-                company.BuildingNo = (string)reader.GetValue(4);
-                company.Brokers = new();
-
+                company = connection.QuerySingle<CompanyModel>($"SELECT * FROM [dbo].[Companies] WHERE [Id] = {id}");
             }
-            _connection.Close();
 
             company = AddBrokersToCompany(company);
 
@@ -45,14 +36,10 @@ namespace _2._NTBrokersDataBase.Services
 
         public CompanyModel AddBrokersToCompany(CompanyModel company)
         {
-            _connection.Open();
-            var command = new SqlCommand($"SELECT [BrokerId] FROM[dbo].[Companies_Brokers] WHERE[CompanyId] = {company.Id}", _connection);
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                company.Brokers.Add((int)reader.GetValue(0));
+                company.Brokers = connection.Query<int>($"SELECT [BrokerId] FROM[dbo].[Companies_Brokers] WHERE[CompanyId] = {company.Id}").ToList();
             }
-            _connection.Close();
 
             return company;
         }
@@ -63,22 +50,10 @@ namespace _2._NTBrokersDataBase.Services
         {
             List<CompanyModel> companies = new();
 
-            _connection.Open();
-            var command = new SqlCommand("SELECT * FROM [dbo].[Companies]", _connection);
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                CompanyModel company = new()
-                {
-                    Id = (int)reader.GetValue(0),
-                    Name = (string)reader.GetValue(1),
-                    City = (string)reader.GetValue(2),
-                    BuildingNo = (string)reader.GetValue(3),
-                };
-
-                companies.Add(company);
+                companies = connection.Query<CompanyModel>("SELECT * FROM [dbo].[Companies]").ToList();
             }
-            _connection.Close();
 
             return companies;
         }
@@ -86,34 +61,32 @@ namespace _2._NTBrokersDataBase.Services
         //INSERTING company to DB
         public void AddCompany(AddCompanyViewModel addCompanyViewData)
         {
-            _connection.Open();
-
-            var command = new SqlCommand($"INSERT INTO dbo.Companies (CompanyName, City, Street, BuildingNo) values ('{addCompanyViewData.Company.Name}', '{addCompanyViewData.Company.City}', '{addCompanyViewData.Company.Street}', '{addCompanyViewData.Company.BuildingNo}')", _connection);
-            var reader = command.ExecuteReader();
-
-            _connection.Close();
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                connection.Execute($"INSERT INTO dbo.Companies (CompanyName, City, Street, BuildingNo) values ('{addCompanyViewData.Company.CompanyName}', '{addCompanyViewData.Company.City}', '{addCompanyViewData.Company.Street}', '{addCompanyViewData.Company.BuildingNo}')");
+            }
 
             foreach (var broker in addCompanyViewData.Company.Brokers)
             {
-                _connection.Open();
-                var command2 = new SqlCommand($"INSERT INTO [dbo].[Companies_Brokers] ([CompanyId], [BrokerId]) VALUES ((SELECT [Id] FROM [dbo].[Companies] WHERE [CompanyName] = '{addCompanyViewData.Company.Name}' AND [City] = '{addCompanyViewData.Company.City}' AND [Street] = '{addCompanyViewData.Company.Street}'), {broker})", _connection);
-                var reader2 = command2.ExecuteReader();
-                _connection.Close();
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    connection.Execute($"INSERT INTO [dbo].[Companies_Brokers] ([CompanyId], [BrokerId]) VALUES ((SELECT [Id] FROM [dbo].[Companies] WHERE [CompanyName] = '{addCompanyViewData.Company.CompanyName}' AND [City] = '{addCompanyViewData.Company.City}' AND [Street] = '{addCompanyViewData.Company.Street}'), {broker})");
+                }
             }
         }
 
         //UPDATING company in DB
         public void EditCompany(EditCompanyViewModel editCompanyViewData)
         {
-            _connection.Open();
-            var command = new SqlCommand($"UPDATE [dbo].[Companies] SET [CompanyName] = '{editCompanyViewData.Company.Name}', [City] = '{editCompanyViewData.Company.City}', [Street] = '{editCompanyViewData.Company.Street}', [BuildingNo] = '{editCompanyViewData.Company.BuildingNo}' WHERE [dbo].[Companies].[Id] = {editCompanyViewData.Company.Id}", _connection);
-            var reader = command.ExecuteReader();
-            _connection.Close();
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                connection.Execute($"UPDATE [dbo].[Companies] SET [CompanyName] = '{editCompanyViewData.Company.CompanyName}', [City] = '{editCompanyViewData.Company.City}', [Street] = '{editCompanyViewData.Company.Street}', [BuildingNo] = '{editCompanyViewData.Company.BuildingNo}' WHERE [dbo].[Companies].[Id] = {editCompanyViewData.Company.Id}");
+            }
 
-            _connection.Open();
-            var command2 = new SqlCommand($"DELETE FROM [dbo].[Companies_Brokers] WHERE [CompanyId] = {editCompanyViewData.Company.Id}", _connection);
-            var reader2 = command2.ExecuteReader();
-            _connection.Close();
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                connection.Execute($"DELETE FROM [dbo].[Companies_Brokers] WHERE [CompanyId] = {editCompanyViewData.Company.Id}");
+            }
 
             if (editCompanyViewData.Company.Brokers == null)
             {
@@ -122,10 +95,10 @@ namespace _2._NTBrokersDataBase.Services
 
             foreach (var broker in editCompanyViewData.Company.Brokers)
             {
-                _connection.Open();
-                var command3 = new SqlCommand($"INSERT INTO [dbo].[Companies_Brokers] ([CompanyId], [BrokerId]) VALUES ({editCompanyViewData.Company.Id}, {broker})", _connection);
-                var reader3 = command3.ExecuteReader();
-                _connection.Close();
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    connection.Execute($"INSERT INTO [dbo].[Companies_Brokers] ([CompanyId], [BrokerId]) VALUES ({editCompanyViewData.Company.Id}, {broker})");
+                }
             }
         }
 
@@ -134,22 +107,10 @@ namespace _2._NTBrokersDataBase.Services
         {
             List<BrokerModel> brokers = new();
 
-            _connection.Open();
-            var command = new SqlCommand($"SELECT [Id], [FirstName], [LastName] FROM [dbo].[Brokers] LEFT JOIN[dbo].[Companies_Brokers] ON [dbo].[Companies_Brokers].[BrokerId] = [dbo].[Brokers].[Id] WHERE [dbo].[Companies_Brokers].[CompanyId] = {id}", _connection);
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                BrokerModel broker = new()
-                {
-                    Id = (int)reader.GetValue(0),
-                    FirstName = (string)reader.GetValue(1),
-                    LastName = (string)reader.GetValue(2)
-
-                };
-
-                brokers.Add(broker);
+                brokers = connection.Query<BrokerModel>($"SELECT [Id], [FirstName], [LastName] FROM [dbo].[Brokers] LEFT JOIN[dbo].[Companies_Brokers] ON [dbo].[Companies_Brokers].[BrokerId] = [dbo].[Brokers].[Id] WHERE [dbo].[Companies_Brokers].[CompanyId] = {id}").ToList();
             }
-            _connection.Close();
 
             return brokers;
         }

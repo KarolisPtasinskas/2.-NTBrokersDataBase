@@ -27,7 +27,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@Html.ActionLink($"{@item.Name}", "BrokersInCompany", "Companies", new { id = $"{item.Id}" })</td>
+                        <td>@Html.ActionLink($"{@item.CompanyName}", "BrokersInCompany", "Companies", new { id = $"{item.Id}" })</td>
                         <td>@item.Street g. @item.BuildingNo, @item.City</td>
                         <td>
                             @Html.ActionLink("Edit", "EditCompany", "Companies", new { id = $"{item.Id}" })

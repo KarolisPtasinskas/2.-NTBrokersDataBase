@@ -12,7 +12,7 @@
 <div class="d-flex mb-3">
     <p class="col-md-2 font-weight-bold">Filter by: </p>
     <div class="col-md-2">
-        @Html.DropDownListFor(x => x.FilterBy.Company, new SelectList(Model.Companies, "Id", "Name"), "Companies", new { @class = "form-control" })
+        @Html.DropDownListFor(x => x.FilterBy.Company, new SelectList(Model.Companies, "Id", "CompanyName"), "Companies", new { @class = "form-control" })
     </div>
     <div class="col-md-2">
         @Html.DropDownListFor(x => x.FilterBy.Broker, new SelectList(Model.Brokers, "Id", "FullName"), "Broker", new { @class = "form-control" })
@@ -48,7 +48,7 @@
             @foreach (var item in Model.Apartments)
             {
                 <tr>
-                    <td>@item.City @item.Street g. @item.BuildingNo, @item.Space sq.m.</td>
+                    <td>@item.City @item.Street g. @item.BuildingNo, @item.ApartmentSpace sq.m.</td>
                     <td>@Html.ActionLink($"{@item.CompanyName}", "BrokersInCompany", "Companies", new { id = $"{item.CompanyId}" })</td>
                     @if (@item.BrokerName == " ")
                     {

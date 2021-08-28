@@ -27,7 +27,7 @@
                 <tr>
                     <td>@item.City</td>
                     <td>@item.Street g. @item.BuildingNo</td>
-                    <td>@item.Space</td>
+                    <td>@item.ApartmentSpace</td>
                     <td>
                     @Html.ActionLink("Remove from list", "UnAssignApartment", "Brokers", new { apartmentId = $"{item.Id}", brokerId = $"{Model.Broker.Id}"})
                     </td>
