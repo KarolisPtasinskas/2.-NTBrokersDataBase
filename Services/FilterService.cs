@@ -23,8 +23,11 @@ namespace _2._NTBrokersDataBase.Services
         {
             
             var stringHelper = (apartmentsIndexViewData.FilterBy.Company != null && apartmentsIndexViewData.FilterBy.Broker != null) ? " AND " : "";
-            var companyString = (apartmentsIndexViewData.FilterBy.Company != null) ? $"[dbo].[Apartments].[CompanyId] = {apartmentsIndexViewData.FilterBy.Company}" : ""; ;
-            var brokerString = (apartmentsIndexViewData.FilterBy.Broker != null) ? $"[dbo].[Apartments].[BrokerId] = {apartmentsIndexViewData.FilterBy.Broker}" : ""; ;
+
+            var companyString = (apartmentsIndexViewData.FilterBy.Company != null) ? $"[dbo].[Apartments].[CompanyId] = {apartmentsIndexViewData.FilterBy.Company}" : "";
+
+            var brokerString = (apartmentsIndexViewData.FilterBy.Broker != null) ? $"[dbo].[Apartments].[BrokerId] = {apartmentsIndexViewData.FilterBy.Broker}" : "";
+
             var fullWhereString = (apartmentsIndexViewData.FilterBy.Company != null || apartmentsIndexViewData.FilterBy.Broker != null) ? $"WHERE {companyString} {stringHelper} {brokerString}" : "";
 
             List<ApartmentModel> apartments = new();

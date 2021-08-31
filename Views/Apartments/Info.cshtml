@@ -1,0 +1,36 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model ApartmentModel
+
+<div class="container">
+    <div class="col-md">
+        <h1 class="mb-5">@Model.Name inormation</h1>
+    </div>
+
+    <div class="col-md-3">
+        <p><b>City:</b> @Model.City</p>
+        <p><b>Street:</b> @Model.Street</p>
+        <p><b>House no.:</b> @Model.BuildingNo</p>
+        <p><b>Floor:</b> @Model.AtFloor</p>
+        <p><b>Floors total:</b> @Model.FloorsInBuilding</p>
+        <p><b>Seller:</b> @Model.CompanyName</p>
+        <p><b>Broker:</b> @Model.BrokerName</p>
+    </div>
+
+    <div>
+        <div id="mapas"></div>
+    </div>
+
+
+</div>
+
+@section scripts {
+    <script>
+        L.mapbox.accessToken = "pk.eyJ1Ijoia2VmaXMiLCJhIjoiY2tzeXdjb2s0Mm82YzJ2bWR2emNpeDJ0ayJ9.rlpZa-4HKbmlB0X2wSlySA";
+        var map = L.mapbox.map("mapas").setView([52.2353922, 21.0181755], 90).addLayer(L.mapbox.styleLayer("mapbox://styles/mapbox/streets-v11"));
+    </script>
+}
+

@@ -26,6 +26,11 @@ namespace _2._NTBrokersDataBase.Controllers
             return View(_viewDataService.GetAllApartments());
         }
 
+        public IActionResult Info(int id)
+        {
+            return View(_apartmentsService.GetOneApartment(id));
+        }
+
         public IActionResult AddApartment()
         {
             return View(_viewDataService.AddApartment());

@@ -48,7 +48,8 @@
             @foreach (var item in Model.Apartments)
             {
                 <tr>
-                    <td>@item.City @item.Street g. @item.BuildingNo, @item.ApartmentSpace sq.m.</td>
+                    <td>@Html.ActionLink($"{@item.City} {@item.Street} g. {@item.BuildingNo}, {@item.ApartmentSpace} sq.m.", "Info", "Apartments", new { id = $"{item.Id}" })</td>
+                    <td></td>
                     <td>@Html.ActionLink($"{@item.CompanyName}", "BrokersInCompany", "Companies", new { id = $"{item.CompanyId}" })</td>
                     @if (@item.BrokerName == " ")
                     {

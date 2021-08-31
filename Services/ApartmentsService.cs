@@ -19,6 +19,19 @@ namespace _2._NTBrokersDataBase.Services
             _configuration = configuration;
         }
 
+        //SELECT one apartment in DB
+        public ApartmentModel GetOneApartment(int id)
+        {
+            ApartmentModel apartment = new();
+
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                apartment = connection.QuerySingle<ApartmentModel>($"SELECT *, CONCAT_WS(' ', ((SELECT ISNULL((SELECT [FirstName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), ''))), ((SELECT ISNULL((SELECT [LastName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), '')))) AS BrokerName, (SELECT [CompanyName] FROM [dbo].[Companies] WHERE [dbo].[Apartments].[CompanyId] = [dbo].[Companies].[Id]) AS CompanyName FROM [dbo].[Apartments] WHERE [dbo].[Apartments].[Id] = {id}");
+            }
+
+            return apartment;
+        }
+
         //SELECT all apartments in DB
         public List<ApartmentModel> GetAllApartments()
         {
