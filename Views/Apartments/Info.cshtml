@@ -3,29 +3,27 @@
 *@
 @{
 }
-@model ApartmentModel
+@model Apartment
 
 <div class="container">
-    <div class="col-md">
-        <h1 class="mb-5">@Model.Name inormation</h1>
+        <div class="col-md">
+            <h1 class="mb-5">Apartment inormation</h1>
+        </div>
+
+        <div class="col-md-3">
+            <p><b>City:</b> @Model.City</p>
+            <p><b>Street:</b> @Model.Street</p>
+            <p><b>House no.:</b> @Model.BuildingNo</p>
+            <p><b>Floor:</b> @Model.AtFloor</p>
+            <p><b>Floors total:</b> @Model.FloorsInBuilding</p>
+        </div>
+
+        <div>
+            <div id="mapas"></div>
+        </div>
+
+
     </div>
-
-    <div class="col-md-3">
-        <p><b>City:</b> @Model.City</p>
-        <p><b>Street:</b> @Model.Street</p>
-        <p><b>House no.:</b> @Model.BuildingNo</p>
-        <p><b>Floor:</b> @Model.AtFloor</p>
-        <p><b>Floors total:</b> @Model.FloorsInBuilding</p>
-        <p><b>Seller:</b> @Model.CompanyName</p>
-        <p><b>Broker:</b> @Model.BrokerName</p>
-    </div>
-
-    <div>
-        <div id="mapas"></div>
-    </div>
-
-
-</div>
 
 @section scripts {
     <script>

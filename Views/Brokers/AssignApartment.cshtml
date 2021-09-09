@@ -12,7 +12,7 @@
 {
 <div class="row mb-3">
     <div class="mr-3">
-        @Html.ListBoxFor(x => x.SelectedApartments, new MultiSelectList(@Model.Apartments, "Id", "Name"), new { id = "multiSelectDropDown", multiple = "multiple", style = "width:200px" })
+        @Html.ListBoxFor(x => x.SelectedApartments, new MultiSelectList(@Model.Apartments, "Id", "City"), new { id = "multiSelectDropDown", multiple = "multiple", style = "width:200px" })
     </div>
     <div>
         @Html.HiddenFor(x => x.BrokerId)

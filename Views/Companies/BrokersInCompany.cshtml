@@ -4,7 +4,7 @@
 @{
 }
 
-@model List<BrokerModel>
+@model List<Broker>
 
 <div class="container">
 
@@ -19,7 +19,7 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@Html.ActionLink($"{@item.FullName}", "BrokerApartments", "Brokers", new { id = $"{item.Id}" })</td>
+                    <td>@Html.ActionLink($"{@item.FirstName} {item.LastName}", "BrokerApartments", "Brokers", new { id = $"{item.Id}" })</td>
                     <td>Remove</td>
                 </tr>
             }

@@ -1,115 +1,82 @@
-﻿using _2._NTBrokersDataBase.Models;
-using Dapper;
-using Microsoft.Extensions.Configuration;
+﻿using _2._NTBrokersDataBase.Data;
+using _2._NTBrokersDataBase.Models;
 //using _2._NTBrokersDataBase.Models.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Services
 {
     public class CompaniesService
     {
-        private readonly IConfiguration _configuration;
+        private readonly RealEstateEfCoreContext _context;
 
-        public CompaniesService(IConfiguration configuration)
+        public CompaniesService(RealEstateEfCoreContext context)
         {
-            _configuration = configuration;
+            _context = context;
         }
 
-        //SELECT one company from DB + add brokers 
-        public CompanyModel GetCompany(int id)
+        public Company GetCompany(int id)
         {
-            CompanyModel company = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                company = connection.QuerySingle<CompanyModel>($"SELECT * FROM [dbo].[Companies] WHERE [Id] = {id}");
-            }
-
-            company = AddBrokersToCompany(company);
-
-            return company;
+            return _context.Companies.FirstOrDefault(b => b.Id == id);
         }
 
-        public CompanyModel AddBrokersToCompany(CompanyModel company)
+        public List<Company> GetAllCompanies()
         {
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                company.Brokers = connection.Query<int>($"SELECT [BrokerId] FROM[dbo].[Companies_Brokers] WHERE[CompanyId] = {company.Id}").ToList();
-            }
-
-            return company;
+            return _context.Companies.ToList();
         }
 
-
-        //SELECT all companies in DB
-        public List<CompanyModel> GetAllCompanies()
-        {
-            List<CompanyModel> companies = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                companies = connection.Query<CompanyModel>("SELECT * FROM [dbo].[Companies]").ToList();
-            }
-
-            return companies;
-        }
-
-        //INSERTING company to DB
         public void AddCompany(AddCompanyViewModel addCompanyViewData)
         {
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                connection.Execute($"INSERT INTO dbo.Companies (CompanyName, City, Street, BuildingNo) values ('{addCompanyViewData.Company.CompanyName}', '{addCompanyViewData.Company.City}', '{addCompanyViewData.Company.Street}', '{addCompanyViewData.Company.BuildingNo}')");
-            }
+            _context.Companies.Add(addCompanyViewData.Company);
 
-            foreach (var broker in addCompanyViewData.Company.Brokers)
+            foreach (var broker in addCompanyViewData.CompanyBrokersId)
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                _context.CompanyBrokers.Add(new CompanyBroker
                 {
-                    connection.Execute($"INSERT INTO [dbo].[Companies_Brokers] ([CompanyId], [BrokerId]) VALUES ((SELECT [Id] FROM [dbo].[Companies] WHERE [CompanyName] = '{addCompanyViewData.Company.CompanyName}' AND [City] = '{addCompanyViewData.Company.City}' AND [Street] = '{addCompanyViewData.Company.Street}'), {broker})");
-                }
+                    Company = addCompanyViewData.Company,
+                    BrokerId = broker
+                });
             }
+            _context.SaveChanges();
         }
 
-        //UPDATING company in DB
         public void EditCompany(EditCompanyViewModel editCompanyViewData)
         {
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            _context.Companies.Update(editCompanyViewData.Company);
+
+            List<CompanyBroker> companies = _context.CompanyBrokers.Where(c => c.CompanyId == editCompanyViewData.Company.Id).ToList();
+
+            foreach (var company in companies)
             {
-                connection.Execute($"UPDATE [dbo].[Companies] SET [CompanyName] = '{editCompanyViewData.Company.CompanyName}', [City] = '{editCompanyViewData.Company.City}', [Street] = '{editCompanyViewData.Company.Street}', [BuildingNo] = '{editCompanyViewData.Company.BuildingNo}' WHERE [dbo].[Companies].[Id] = {editCompanyViewData.Company.Id}");
+                _context.CompanyBrokers.Remove(company);
             }
 
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                connection.Execute($"DELETE FROM [dbo].[Companies_Brokers] WHERE [CompanyId] = {editCompanyViewData.Company.Id}");
-            }
-
-            if (editCompanyViewData.Company.Brokers == null)
+            if (editCompanyViewData.CompanyBrokersIds == null)
             {
                 return;
             }
 
-            foreach (var broker in editCompanyViewData.Company.Brokers)
+            foreach (var broker in editCompanyViewData.CompanyBrokersIds)
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                _context.CompanyBrokers.Add(new CompanyBroker
                 {
-                    connection.Execute($"INSERT INTO [dbo].[Companies_Brokers] ([CompanyId], [BrokerId]) VALUES ({editCompanyViewData.Company.Id}, {broker})");
-                }
+                    CompanyId = editCompanyViewData.Company.Id,
+                    BrokerId = broker
+                });
             }
+
+            _context.SaveChanges();
         }
 
-        //SELECT all brokers in specified company from DB
-        public List<BrokerModel> GetAllBrokersInCompany(int id)
+        public List<Broker> GetAllBrokersInCompany(int id)
         {
-            List<BrokerModel> brokers = new();
+            var companyBrokers = _context.CompanyBrokers.Where(c => c.CompanyId == id).ToList();
 
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            List<Broker> brokers = new();
+
+            foreach (var obj in companyBrokers)
             {
-                brokers = connection.Query<BrokerModel>($"SELECT [Id], [FirstName], [LastName] FROM [dbo].[Brokers] LEFT JOIN[dbo].[Companies_Brokers] ON [dbo].[Companies_Brokers].[BrokerId] = [dbo].[Brokers].[Id] WHERE [dbo].[Companies_Brokers].[CompanyId] = {id}").ToList();
+                brokers.Add(_context.Brokers.FirstOrDefault(b => b.Id == obj.BrokerId));
             }
 
             return brokers;

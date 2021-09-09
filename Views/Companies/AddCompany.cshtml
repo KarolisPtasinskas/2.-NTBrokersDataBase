@@ -24,7 +24,7 @@
             @Html.TextBoxFor(x => x.Company.BuildingNo, new { @class = "form-control col-sm-12", placeholder = "Building no." })
         </div>
         <div class="mr-3">
-            @Html.ListBoxFor(x => x.Company.Brokers, new MultiSelectList(@Model.Brokers, "Id", "FirstName"), new { id = "multiSelectDropDown", multiple = "multiple", style = "width:200px" })
+            @Html.ListBoxFor(x => x.CompanyBrokersId, new MultiSelectList(@Model.Brokers, "Id", "FirstName"), new { id = "multiSelectDropDown", multiple = "multiple", style = "width:200px" })
         </div>
 
         <div>

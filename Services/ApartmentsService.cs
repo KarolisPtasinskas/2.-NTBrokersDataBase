@@ -1,59 +1,33 @@
-﻿using _2._NTBrokersDataBase.Models;
-using Dapper;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using _2._NTBrokersDataBase.Data;
+using _2._NTBrokersDataBase.Models;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Services
 {
     public class ApartmentsService
     {
-        private readonly IConfiguration _configuration;
+        private readonly RealEstateEfCoreContext _context;
 
-        public ApartmentsService(IConfiguration configuration)
+        public ApartmentsService(RealEstateEfCoreContext context)
         {
-            _configuration = configuration;
+            _context = context;
         }
 
-        //SELECT one apartment in DB
-        public ApartmentModel GetOneApartment(int id)
+        public Apartment GetOneApartment(int id)
         {
-            ApartmentModel apartment = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                apartment = connection.QuerySingle<ApartmentModel>($"SELECT *, CONCAT_WS(' ', ((SELECT ISNULL((SELECT [FirstName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), ''))), ((SELECT ISNULL((SELECT [LastName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), '')))) AS BrokerName, (SELECT [CompanyName] FROM [dbo].[Companies] WHERE [dbo].[Apartments].[CompanyId] = [dbo].[Companies].[Id]) AS CompanyName FROM [dbo].[Apartments] WHERE [dbo].[Apartments].[Id] = {id}");
-            }
-
-            return apartment;
+            return _context.Apartments.FirstOrDefault(a => a.Id == id);
         }
 
-        //SELECT all apartments in DB
-        public List<ApartmentModel> GetAllApartments()
+        public List<Apartment> GetAllApartments()
         {
-            List<ApartmentModel> apartments = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                apartments = connection.Query<ApartmentModel>("SELECT *, CONCAT_WS(' ', ((SELECT ISNULL((SELECT [FirstName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), ''))), ((SELECT ISNULL((SELECT [LastName] FROM [dbo].[Brokers] WHERE [dbo].[Apartments].[BrokerId] = [dbo].[Brokers].[Id]), '')))) AS BrokerName, (SELECT [CompanyName] FROM [dbo].[Companies] WHERE [dbo].[Apartments].[CompanyId] = [dbo].[Companies].[Id]) AS CompanyName FROM [dbo].[Apartments]").ToList();
-            }
-
-            return apartments;
+            return _context.Apartments.ToList();
         }
 
-        //INSERTING one apartment to DB
         public void AddApartment(AddApartmentViewModel addApartmentViewData)
         {
-            string query = $"INSERT INTO dbo.Apartments (City, Street, BuildingNo, AtFloor, FloorsInBuilding, ApartmentSpace, BrokerId, CompanyId) values ('{addApartmentViewData.Apartment.City}', '{addApartmentViewData.Apartment.Street}', '{addApartmentViewData.Apartment.BuildingNo}', {addApartmentViewData.Apartment.AtFloor}, {addApartmentViewData.Apartment.FloorsInBuilding}, {addApartmentViewData.Apartment.ApartmentSpace}, {addApartmentViewData.Apartment.BrokerId}, {addApartmentViewData.Apartment.CompanyId})";
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                connection.Execute(query);
-            }
+            _context.Apartments.Add(addApartmentViewData.Apartment);
+            _context.SaveChanges();
         }
     }
 }

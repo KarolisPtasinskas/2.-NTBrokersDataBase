@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace _2._NTBrokersDataBase.Models
 {
     public class AddCompanyViewModel
     {
-        public CompanyModel Company { get; set; }
-        public List<BrokerModel> Brokers { get; set; }
+        public Company Company { get; set; }
+        public List<int> CompanyBrokersId { get; set; }
+        public List<Broker> Brokers { get; set; }
     }
 }

@@ -1,12 +1,7 @@
 ﻿using _2._NTBrokersDataBase.Models;
 using _2._NTBrokersDataBase.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Controllers
 {

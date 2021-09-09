@@ -7,7 +7,7 @@ namespace _2._NTBrokersDataBase.Models
 {
     public class AssignApartmentViewModel
     {
-        public List<ApartmentModel> Apartments { get; set; }
+        public List<Apartment> Apartments { get; set; }
         public List<int> SelectedApartments { get; set; }
         public int BrokerId { get; set; }
     }

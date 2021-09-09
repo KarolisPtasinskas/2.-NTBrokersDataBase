@@ -33,7 +33,7 @@ namespace _2._NTBrokersDataBase.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddBroker(BrokerModel broker)
+        public IActionResult AddBroker(Broker broker)
         {
             _brokersService.AddBroker(broker);
             return RedirectToAction("Index");

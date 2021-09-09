@@ -7,8 +7,8 @@ namespace _2._NTBrokersDataBase.Models
 {
     public class BrokerApartmentsViewModel
     {
-        public BrokerModel Broker { get; set; }
-        public List<ApartmentModel> Apartments { get; set; }
+        public Broker Broker { get; set; }
+        public List<Apartment> Apartments { get; set; }
 
     }
 }

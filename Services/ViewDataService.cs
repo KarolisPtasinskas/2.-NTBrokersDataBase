@@ -1,8 +1,4 @@
 ﻿using _2._NTBrokersDataBase.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Services
 {
@@ -55,7 +51,7 @@ namespace _2._NTBrokersDataBase.Services
         {
             AddApartmentViewModel addApartmentView = new()
             {
-                Apartment = new ApartmentModel(),
+                Apartment = new Apartment(),
                 Companies = _companiesService.GetAllCompanies()
             };
             return addApartmentView;
@@ -65,7 +61,8 @@ namespace _2._NTBrokersDataBase.Services
         {
             AddCompanyViewModel addCompanyView = new()
             {
-                Company = new CompanyModel(),
+                Company = new Company(),
+                CompanyBrokersId = new(),
                 Brokers = _brokersService.GetAllBrokers()
             };
 
@@ -77,8 +74,14 @@ namespace _2._NTBrokersDataBase.Services
             EditCompanyViewModel editCompanyView = new()
             {
                 Company = _companiesService.GetCompany(id),
+                CompanyBrokersIds = new(),
                 Brokers = _brokersService.GetAllBrokers()
             };
+
+            foreach (var broker in _companiesService.GetAllBrokersInCompany(id))
+            {
+                editCompanyView.CompanyBrokersIds.Add(broker.Id);
+            }
 
             return editCompanyView;
         }

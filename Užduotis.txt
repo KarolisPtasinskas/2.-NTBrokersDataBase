@@ -1,0 +1,8 @@
+﻿For Advanced:
+
+1. Completed Brokers, Companies, Apartments application with EF Core.
+2. Research Services, Repositories, implement the patterns:
+Services should contain logic and call Repositories for database actions. Repositories use DbContext.
+3. Add, Delete, Actions should be implemented by Generic Repository pattern: https://dotnettutorials.net/lesson/generic-repository-pattern-csharp-mvc/
+
+4. Extra hard: In appsettings, I should be able to switch between real database and InMemoryDatabase

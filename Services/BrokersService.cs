@@ -1,110 +1,72 @@
-﻿using _2._NTBrokersDataBase.Models;
-using Dapper;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using _2._NTBrokersDataBase.Data;
+using _2._NTBrokersDataBase.Models;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Services
 {
     public class BrokersService
     {
-        private readonly IConfiguration _configuration;
+        private readonly RealEstateEfCoreContext _context;
 
-        public BrokersService(IConfiguration configuration)
+        public BrokersService(RealEstateEfCoreContext context)
         {
-            _configuration = configuration;
+            _context = context;
         }
 
-        //SELECT broker from DB
-        public BrokerModel GetBroker(int id)
+        public Broker GetBroker(int id)
         {
-            BrokerModel broker = new();
+            return _context.Brokers.FirstOrDefault(b => b.Id == id);
+        }
 
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+        public List<Broker> GetAllBrokers()
+        {
+            return _context.Brokers.ToList();
+        }
+
+        public void AddBroker(Broker broker)
+        {
+            _context.Brokers.Add(broker);
+
+            _context.SaveChanges();
+        }
+
+        public List<Apartment> GetBrokerApartments(int id)
+        {
+            return _context.Apartments.Where(a => a.BrokerId == id).ToList();
+        }
+
+        public List<Apartment> GetUnassignedApartments(int id)
+        {
+            var company = _context.CompanyBrokers.FirstOrDefault(c => c.BrokerId == id);
+
+            if (company == null)
             {
-                broker = connection.QuerySingle<BrokerModel>($"SELECT * FROM [dbo].[Brokers] WHERE [dbo].[Brokers].[Id] = {id}");
+                return new List<Apartment>();
             }
 
-            return broker;
+            return _context.Apartments.Where(a => a.BrokerId == null && a.CompanyId == company.CompanyId).ToList();
         }
 
-
-        //SELECT all brokers in DB
-        public List<BrokerModel> GetAllBrokers()
-        {
-            List<BrokerModel> brokers = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                brokers = connection.Query<BrokerModel>("SELECT * FROM [dbo].[Brokers]").ToList();
-            }
-
-            return brokers;
-        }
-
-        //INSERTING broker to DB
-        public void AddBroker(BrokerModel broker)
-        {
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                connection.Execute($"INSERT INTO dbo.Brokers (FirstName, LastName) values ('{broker.FirstName}', '{broker.LastName}')");
-            }
-
-
-        }
-
-        //SELECT specific broker apartments from DB
-
-        public List<ApartmentModel> GetBrokerApartments(int id)
-        {
-            List<ApartmentModel> apartments = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                apartments = connection.Query<ApartmentModel>($"SELECT *, null AS BrokerName, null AS BrokerCompany FROM [dbo].[Apartments] WHERE [dbo].[Apartments].[BrokerId] = {id}").ToList();
-            }
-
-            return apartments;
-        }
-
-        //SELECT all unassigned apartments which belongs to companies where broker works
-        public List<ApartmentModel> GetUnassignedApartments(int id)
-        {
-            List<ApartmentModel> apartments = new();
-
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                apartments = connection.Query<ApartmentModel>($"SELECT * FROM [dbo].[Apartments] LEFT JOIN [dbo].[Companies_Brokers] ON [dbo].[Apartments].[CompanyId] = [dbo].[Companies_Brokers].[CompanyId] WHERE [dbo].[Apartments].[BrokerId] = 0 AND [dbo].[Companies_Brokers].[BrokerId] = {id}").ToList();
-            }
-
-            return apartments;
-        }
-
-        //UPDATING apartment with new BrokerId (after assigning it to broker)
         public void AssignApartment(AssignApartmentViewModel assignApartmentViewData)
         {
             foreach (var apartmentId in assignApartmentViewData.SelectedApartments)
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-                {
-                    connection.Execute($"UPDATE [dbo].[Apartments] SET [dbo].[Apartments].[BrokerId] = {assignApartmentViewData.BrokerId} WHERE [dbo].[Apartments].[Id] = {apartmentId}");
-                }
-
+                var apartment = _context.Apartments.FirstOrDefault(a => a.Id == apartmentId);
+                apartment.BrokerId = assignApartmentViewData.BrokerId;
+                _context.Apartments.Update(apartment);
             }
+            _context.SaveChanges();
         }
 
-
-        //UPDATE apartment unassigning his BrokerID value (changint to 0)
         public void UnAssignApartment(int id)
         {
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
-            {
-                connection.Execute($"UPDATE [dbo].[Apartments] SET [dbo].[Apartments].[BrokerId] = 0 WHERE [dbo].[Apartments].[Id] = {id}");
-            }
-
+            var apartment = _context.Apartments.FirstOrDefault(a => a.Id == id);
+            apartment.BrokerId = null;
+            _context.Apartments.Update(apartment);
+            _context.SaveChanges();
         }
+
+
     }
 }

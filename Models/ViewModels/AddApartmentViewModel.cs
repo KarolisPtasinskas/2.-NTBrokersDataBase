@@ -7,7 +7,7 @@ namespace _2._NTBrokersDataBase.Models
 {
     public class AddApartmentViewModel
     {
-        public ApartmentModel Apartment { get; set; }
-        public List<CompanyModel> Companies { get; set; }
+        public Apartment Apartment { get; set; }
+        public List<Company> Companies { get; set; }
     }
 }

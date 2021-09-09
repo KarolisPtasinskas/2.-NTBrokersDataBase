@@ -7,7 +7,7 @@ namespace _2._NTBrokersDataBase.Models
 {
     public class FilterModel
     {
-        public string Company { get; set; }
-        public string Broker { get; set; }
+        public int? Company { get; set; }
+        public int? Broker { get; set; }
     }
 }
