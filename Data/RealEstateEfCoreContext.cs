@@ -1,10 +1,5 @@
 ﻿using _2._NTBrokersDataBase.Models;
-using _2._NTBrokersDataBase.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Data
 {
@@ -33,12 +28,5 @@ namespace _2._NTBrokersDataBase.Data
                 .WithMany(c => c.CompanyBrokers)
                 .HasForeignKey(cb => cb.BrokerId);
         }
-
-        // >>>> Šios vietos nebereikia, kai sukurta DbContextOptions. Ėjimas į DB eina per servisus. <<<<
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer("Server=.;Database=RealEstateEfCore;Integrated Security=SSPI;");
-        //}
     }
 }

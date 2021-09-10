@@ -1,17 +1,12 @@
 using _2._NTBrokersDataBase.Data;
+using _2._NTBrokersDataBase.Repo;
 using _2._NTBrokersDataBase.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase
 {
@@ -27,16 +22,12 @@ namespace _2._NTBrokersDataBase
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //              >>>> Senas SQL connection <<<<<
-            //services.AddTransient<SqlConnection>(_ => new SqlConnection(Configuration["ConnectionStrings:DefaultConnection"]));
-
-
-            //services.AddDbContext<RealEstateEfCoreContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:DefaultEfcore"]));
-
-
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<RealEstateEfCoreContext>(d => d.UseSqlServer(connectionString));
             services.AddControllersWithViews();
+
+            //Repositories
+            services.AddScoped<ApartmentsRepository>();
 
             services.AddScoped<ViewDataService>();
             services.AddScoped<ApartmentsService>();
@@ -54,7 +45,7 @@ namespace _2._NTBrokersDataBase
             }
             else
             {
-                app.UseExceptionHandler("/Helper/Error");
+                app.UseExceptionHandler("/Apartments/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -69,7 +60,7 @@ namespace _2._NTBrokersDataBase
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Helper}/{action=Index}/{id?}");
+                    pattern: "{controller=Apartments}/{action=Index}/{id?}");
             });
         }
     }

@@ -1,11 +1,6 @@
 ﻿using _2._NTBrokersDataBase.Models;
 using _2._NTBrokersDataBase.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Controllers
 {
@@ -13,13 +8,11 @@ namespace _2._NTBrokersDataBase.Controllers
     {
         private BrokersService _brokersService;
         private ViewDataService _viewDataService;
-        private ApartmentsService _apartmentService;
 
-        public BrokersController(BrokersService brokersService, ViewDataService viewDataService, ApartmentsService apartmentService)
+        public BrokersController(BrokersService brokersService, ViewDataService viewDataService)
         {
             _brokersService = brokersService;
             _viewDataService = viewDataService;
-            _apartmentService = apartmentService;
         }
         // GET: BrokersController
         public IActionResult Index()

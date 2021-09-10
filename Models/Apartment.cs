@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace _2._NTBrokersDataBase.Models
 {
@@ -33,6 +29,7 @@ namespace _2._NTBrokersDataBase.Models
 
         [Required]
         public int CompanyId { get; set; }
+
 
         public Company Company { get; set; }
     }

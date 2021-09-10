@@ -1,70 +1,52 @@
 ﻿using _2._NTBrokersDataBase.Data;
 using _2._NTBrokersDataBase.Models;
+using _2._NTBrokersDataBase.Repo;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace _2._NTBrokersDataBase.Services
 {
     public class BrokersService
     {
-        private readonly RealEstateEfCoreContext _context;
+        private readonly BrokersRepository _brokerRepository;
 
-        public BrokersService(RealEstateEfCoreContext context)
+        public BrokersService(BrokersRepository brokerRepository)
         {
-            _context = context;
+            _brokerRepository = brokerRepository;
         }
 
         public Broker GetBroker(int id)
         {
-            return _context.Brokers.FirstOrDefault(b => b.Id == id);
+            return _brokerRepository.GetBroker(id);
         }
 
         public List<Broker> GetAllBrokers()
         {
-            return _context.Brokers.ToList();
+            return _brokerRepository.GetAllBrokers();
         }
 
         public void AddBroker(Broker broker)
         {
-            _context.Brokers.Add(broker);
-
-            _context.SaveChanges();
+            _brokerRepository.AddBroker(broker);
         }
 
         public List<Apartment> GetBrokerApartments(int id)
         {
-            return _context.Apartments.Where(a => a.BrokerId == id).ToList();
+            return _brokerRepository.GetBrokerApartments(id);
         }
 
         public List<Apartment> GetUnassignedApartments(int id)
         {
-            var company = _context.CompanyBrokers.FirstOrDefault(c => c.BrokerId == id);
-
-            if (company == null)
-            {
-                return new List<Apartment>();
-            }
-
-            return _context.Apartments.Where(a => a.BrokerId == null && a.CompanyId == company.CompanyId).ToList();
+            return _brokerRepository.GetUnassignedApartments(id);
         }
 
         public void AssignApartment(AssignApartmentViewModel assignApartmentViewData)
         {
-            foreach (var apartmentId in assignApartmentViewData.SelectedApartments)
-            {
-                var apartment = _context.Apartments.FirstOrDefault(a => a.Id == apartmentId);
-                apartment.BrokerId = assignApartmentViewData.BrokerId;
-                _context.Apartments.Update(apartment);
-            }
-            _context.SaveChanges();
+            _brokerRepository.AssignApartment(assignApartmentViewData);
         }
 
         public void UnAssignApartment(int id)
         {
-            var apartment = _context.Apartments.FirstOrDefault(a => a.Id == id);
-            apartment.BrokerId = null;
-            _context.Apartments.Update(apartment);
-            _context.SaveChanges();
+            _brokerRepository.UnAssignApartment(id);
         }
 
 
