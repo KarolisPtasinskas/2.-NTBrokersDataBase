@@ -18,7 +18,7 @@ namespace _2._NTBrokersDataBase.Controllers
 
         public IActionResult Index()
         {
-            return View(_apartmentsService.GetAllApartments());
+            return View(_viewDataService.GetAllApartments());
         }
 
         public IActionResult Info(int id)

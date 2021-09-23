@@ -35,6 +35,7 @@ namespace _2._NTBrokersDataBase.Controllers
         public IActionResult AddCompany(AddCompanyViewModel addCompanyViewData)
         {
             _companiesService.AddCompany(addCompanyViewData);
+
             return RedirectToAction("Index");
         }
 

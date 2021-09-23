@@ -7,14 +7,12 @@ namespace _2._NTBrokersDataBase.Services
         ApartmentsService _apartmentsService;
         CompaniesService _companiesService;
         BrokersService _brokersService;
-        FilterService _filterService;
 
-        public ViewDataService(ApartmentsService apartmentsService, CompaniesService companiesService, BrokersService brokersService, FilterService filterService)
+        public ViewDataService(ApartmentsService apartmentsService, CompaniesService companiesService, BrokersService brokersService)
         {
             _apartmentsService = apartmentsService;
             _companiesService = companiesService;
             _brokersService = brokersService;
-            _filterService = filterService;
         }
 
         public ApartmentsIndexViewModel GetAllApartments()
@@ -34,7 +32,7 @@ namespace _2._NTBrokersDataBase.Services
         {
             ApartmentsIndexViewModel apartmentsIndexView = new()
             {
-                Apartments = _filterService.GetApartments(apartmentsIndexViewData),
+                Apartments = _apartmentsService.Filter(apartmentsIndexViewData),
                 FilterBy = new()
                 {
                     Broker = apartmentsIndexViewData.FilterBy.Broker,

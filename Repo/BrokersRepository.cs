@@ -14,16 +14,6 @@ namespace _2._NTBrokersDataBase.Repo
             _context = context;
         }
 
-        public Broker GetBroker(int id)
-        {
-            return _context.Brokers.FirstOrDefault(b => b.Id == id);
-        }
-
-        public List<Broker> GetAllBrokers()
-        {
-            return _context.Brokers.ToList();
-        }
-
         public void AddBroker(Broker broker)
         {
             _context.Brokers.Add(broker);
@@ -48,12 +38,12 @@ namespace _2._NTBrokersDataBase.Repo
             return _context.Apartments.Where(a => a.BrokerId == null && a.CompanyId == company.CompanyId).ToList();
         }
 
-        public void AssignApartment(AssignApartmentViewModel assignApartmentViewData)
+        public void AssignApartment(List<int> selectedApartments, int brokerId)
         {
-            foreach (var apartmentId in assignApartmentViewData.SelectedApartments)
+            foreach (var apartmentId in selectedApartments)
             {
                 var apartment = _context.Apartments.FirstOrDefault(a => a.Id == apartmentId);
-                apartment.BrokerId = assignApartmentViewData.BrokerId;
+                apartment.BrokerId = brokerId;
                 _context.Apartments.Update(apartment);
             }
             _context.SaveChanges();

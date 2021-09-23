@@ -1,5 +1,6 @@
 using _2._NTBrokersDataBase.Data;
 using _2._NTBrokersDataBase.Repo;
+using _2._NTBrokersDataBase.Repo.RepositoryUsingEFinMVC.GenericRepository;
 using _2._NTBrokersDataBase.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,18 +23,30 @@ namespace _2._NTBrokersDataBase
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<RealEstateEfCoreContext>(d => d.UseSqlServer(connectionString));
+            var dataBaseLink = "Inmemory";
+
+            if (dataBaseLink == "DefaultConnection")
+            {
+                var connectionString = Configuration.GetConnectionString("DefaultConnection");
+                services.AddDbContext<RealEstateEfCoreContext>(d => d.UseSqlServer(connectionString));
+            } else
+            {
+                services.AddDbContext<RealEstateEfCoreContext>(opt => opt.UseInMemoryDatabase("Test"));
+            }
+
             services.AddControllersWithViews();
 
             //Repositories
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<ApartmentsRepository>();
+            services.AddScoped<BrokersRepository>();
+            services.AddScoped<CompaniesRepository>();
 
+            //Services
             services.AddScoped<ViewDataService>();
             services.AddScoped<ApartmentsService>();
             services.AddScoped<CompaniesService>();
             services.AddScoped<BrokersService>();
-            services.AddScoped<FilterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,9 +1,7 @@
 ﻿using _2._NTBrokersDataBase.Data;
 using _2._NTBrokersDataBase.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace _2._NTBrokersDataBase.Repo
 {
@@ -16,53 +14,28 @@ namespace _2._NTBrokersDataBase.Repo
             _context = context;
         }
 
-        public Company GetCompany(int id)
+        public void EditCompany(Company company, List<int> companyBrokersIds)
         {
-            return _context.Companies.FirstOrDefault(b => b.Id == id);
-        }
+            _context.Companies.Update(company);
 
-        public List<Company> GetAllCompanies()
-        {
-            return _context.Companies.ToList();
-        }
+            List<CompanyBroker> companies = _context.CompanyBrokers.Where(c => c.CompanyId == company.Id).ToList();
 
-        public void AddCompany(AddCompanyViewModel addCompanyViewData)
-        {
-            _context.Companies.Add(addCompanyViewData.Company);
-
-            foreach (var broker in addCompanyViewData.CompanyBrokersId)
+            foreach (var selectedCompany in companies)
             {
-                _context.CompanyBrokers.Add(new CompanyBroker
-                {
-                    Company = addCompanyViewData.Company,
-                    BrokerId = broker
-                });
-            }
-            _context.SaveChanges();
-        }
-
-        public void EditCompany(EditCompanyViewModel editCompanyViewData)
-        {
-            _context.Companies.Update(editCompanyViewData.Company);
-
-            List<CompanyBroker> companies = _context.CompanyBrokers.Where(c => c.CompanyId == editCompanyViewData.Company.Id).ToList();
-
-            foreach (var company in companies)
-            {
-                _context.CompanyBrokers.Remove(company);
+                _context.CompanyBrokers.Remove(selectedCompany);
             }
 
-            if (editCompanyViewData.CompanyBrokersIds == null)
+            if (companyBrokersIds == null)
             {
                 return;
             }
 
-            foreach (var broker in editCompanyViewData.CompanyBrokersIds)
+            foreach (var brokerId in companyBrokersIds)
             {
                 _context.CompanyBrokers.Add(new CompanyBroker
                 {
-                    CompanyId = editCompanyViewData.Company.Id,
-                    BrokerId = broker
+                    CompanyId = company.Id,
+                    BrokerId = brokerId
                 });
             }
 
